@@ -58,36 +58,6 @@ class CommentController {
     const { id, body, authorId } = await Comment.create(req?.body?.comment);
     return res.json({ id, body, authorId });
   }
-
-  async update(req, res) {
-    const { authorId } = req.body;
-    const schema = Yup.object().shape({
-      username: Yup.string(),
-      email: Yup.string(),
-    });
-
-    if (!(await schema.isValid(req?.body?.comment)))
-      return res.status(400).json({ errors: { body: ['Validation fails'] } });
-
-    const user = await User.findByPk(authorId);
-
-    await user.update(req?.body?.user);
-
-    const { id, username, following, image, avatar, bio } = await User.findByPk(
-      req?.userId,
-      {
-        include: [
-          {
-            model: File,
-            as: 'avatar',
-            attributes: ['id', 'path', 'url'],
-          },
-        ],
-      }
-    );
-
-    return res.json({ id, username, bio, image, following, email, avatar });
-  }
 }
 
 export default new CommentController();

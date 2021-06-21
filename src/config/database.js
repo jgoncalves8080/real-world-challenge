@@ -1,11 +1,10 @@
 module.exports = {
-  dialect: 'mysql',
-  host: 'localhost',
-  username: 'root',
-  password: '',
-  database: 'realworld',
+  dialect: process.env.CONNECTION_DIALECT,
+  host: process.env.CONNECTION_HOST,
+  username: process.env.CONNECTION_USERNAME,
+  password: process.env.CONNECTION_PASSWORD,
+  database: process.env.CONNECTION_DATABASE,
   define: {
     timestamps: true,
-    //freezeTableName: true, /w/O nome das tabelas será igual ao nome do Model
   },
 };

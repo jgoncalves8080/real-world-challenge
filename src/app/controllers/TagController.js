@@ -32,7 +32,7 @@ class TagController {
 
     await Tag.update(req?.body);
 
-    const { id, Tagname, following, image, avatar, bio } = await Tag.findByPk(
+    const { id, username, following, image, avatar, bio } = await Tag.findByPk(
       req?.userId,
       {
         include: [
@@ -45,7 +45,7 @@ class TagController {
       }
     );
 
-    return res.json({ id, Tagname, bio, image, following, email, avatar });
+    return res.json({ id, username, bio, image, following, email, avatar });
   }
 }
 
