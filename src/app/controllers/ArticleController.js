@@ -5,7 +5,7 @@ import Article from '../models/Article';
 
 class ArticleController {
   async index(req, res) {
-    const { author, tag, page = 1, limit = 20 } = req.query;
+    const { author, tag, page = 1, limit = 20, slug } = req.query;
     let articles;
     articles = await Article.findAll({
       attributes: [
@@ -38,15 +38,41 @@ class ArticleController {
       return res.json({ data, articlesCount: data.length });
     }
 
+    if (slug) {
+      data = articles.filter((item) => item?.slug === slug);
+      return res.json({ data, articlesCount: data.length });
+    }
+
     if (tag) {
-      // data = articles?.tagList?.filter((item) => item?.title === tag);
-
-      const test = articles.filter((article) => {
-        return article.tagList.includes({ title: tag });
+      data = await Tag.findAll({
+        where: { title: tag },
+        attributes: [],
+        limit,
+        offset: (page - 1) * 20,
+        include: [
+          {
+            model: Article,
+            as: 'articles',
+            attributes: [
+              'slug',
+              'title',
+              'description',
+              'body',
+              'favorited',
+              'favoritesCount',
+            ],
+            through: { attributes: [] },
+            include: [
+              {
+                model: User,
+                as: 'author',
+                attributes: ['username', 'bio', 'image', 'following'],
+              },
+            ],
+          },
+        ],
       });
-
-      console.log('test=>', test);
-      return res.json({ test, articlesCount: test.length });
+      return res.json({ data, articlesCount: data.length });
     }
 
     return res.json({ articles, articlesCount: articles.length });
