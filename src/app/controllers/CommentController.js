@@ -37,17 +37,17 @@ class CommentController {
   }
 
   async store(req, res) {
+    const { authorId } = req.params;
     const schema = Yup.object().shape({
       body: Yup.string().required(),
-      authorId: Yup.number().required(),
     });
 
-    if (!(await schema.isValid(req?.body?.comment)))
+    if (!(await schema.isValid(req.body.comment)))
       return res.status(400).json({ errors: { body: ['Validation fails'] } });
 
-    const userExists = await User.findOne({
-      where: { id: req.body?.comment?.authorId },
-    });
+    console.log('author=>', { ...req.body.comment, authorId });
+
+    const userExists = await User.findByPk(authorId);
 
     if (!userExists) {
       return res
@@ -55,8 +55,8 @@ class CommentController {
         .json({ errors: { body: ['User does not existis'] } });
     }
 
-    const { id, body, authorId } = await Comment.create(req?.body?.comment);
-    return res.json({ id, body, authorId });
+    const comments = await Comment.create({ ...req.body.comment, authorId });
+    return res.json(comments);
   }
 }
 

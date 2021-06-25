@@ -13,6 +13,13 @@ class Tag extends Model {
 
     return this;
   }
+  static associate(models) {
+    this.belongsToMany(models.Article, {
+      foreignKey: 'tagId',
+      through: 'articleTags',
+      as: 'articles',
+    });
+  }
 }
 
 export default Tag;

@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import Tag from '../models/Tag';
+import Article from '../models/Article';
 
 class TagController {
   async index(req, res) {
@@ -11,6 +12,8 @@ class TagController {
   }
 
   async store(req, res) {
+    const { articleId } = req.params;
+    const { title } = req.body;
     const schema = Yup.object().shape({
       title: Yup.string().required(),
     });
@@ -18,8 +21,20 @@ class TagController {
     if (!(await schema.isValid(req?.body)))
       return res.status(400).json({ errors: { body: ['Validation fails'] } });
 
-    const { id, title } = await Tag.create(req?.body);
-    return res.json({ id, title });
+    const article = await Article.findByPk(articleId);
+
+    if (!article)
+      return res
+        .status(400)
+        .json({ errors: { body: ['Article does not exist'] } });
+
+    const [tag] = await Tag.findOrCreate({
+      where: { title },
+    });
+
+    await article.addTag(tag);
+
+    return res.json(tag);
   }
 
   async update(req, res) {

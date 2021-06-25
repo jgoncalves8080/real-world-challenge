@@ -5,8 +5,9 @@ import User from '../app/models/User';
 import File from '../app/models/File';
 import Tag from '../app/models/Tag';
 import Comment from '../app/models/Comment';
+import Article from '../app/models/Article';
 
-const models = [User, File, Tag, Comment];
+const models = [User, File, Tag, Comment, Article];
 
 class Database {
   constructor() {

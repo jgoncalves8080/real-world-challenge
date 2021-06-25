@@ -6,6 +6,7 @@ import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
 import TagController from './app/controllers/TagController';
 import CommentController from './app/controllers/CommentController';
+import ArticleController from './app/controllers/ArticleController';
 
 import authMiddlewar from './app/middlewars/auth';
 
@@ -23,14 +24,18 @@ routes.put('/user', UserController.update);
 
 routes.post('/files', upload.single('file'), FileController.store);
 
-routes.post('/tags', TagController.store);
+routes.post('/articles/:articleId/tags', TagController.store);
 
 routes.get('/tags', TagController.index);
 
-routes.post('/comments', CommentController.store);
+routes.post('/author/:authorId/comments', CommentController.store);
 
 routes.get('/comments', CommentController.index);
 
 routes.get('/:commentId/comments', CommentController.index);
+
+routes.post('/author/:authorId/articles', ArticleController.store);
+
+routes.get('/articles', ArticleController.index);
 
 export default routes;
