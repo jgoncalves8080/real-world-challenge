@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import User from '../models/User';
 import Comment from '../models/Comment';
-import File from '../models/File';
+import Article from '../models/Article';
 
 class CommentController {
   async index(req, res) {
@@ -37,25 +37,40 @@ class CommentController {
   }
 
   async store(req, res) {
-    const { authorId } = req.params;
+    const { slug } = req.params;
+    const { authorId } = req.body.comment;
+
     const schema = Yup.object().shape({
       body: Yup.string().required(),
+      authorId: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body.comment)))
       return res.status(400).json({ errors: { body: ['Validation fails'] } });
 
-    console.log('author=>', { ...req.body.comment, authorId });
+    const authorExists = await User.findByPk(authorId);
 
-    const userExists = await User.findByPk(authorId);
-
-    if (!userExists) {
+    if (!authorExists) {
       return res
         .status(400)
         .json({ errors: { body: ['User does not existis'] } });
     }
 
-    const comments = await Comment.create({ ...req.body.comment, authorId });
+    const articleExists = await Article.findOne({
+      where: { slug },
+    });
+
+    if (!articleExists) {
+      return res
+        .status(400)
+        .json({ errors: { body: ['Article does not existis'] } });
+    }
+
+    const comments = await Comment.create({
+      ...req.body.comment,
+      articleId: articleExists?.id,
+      authorId,
+    });
     return res.json(comments);
   }
 }
