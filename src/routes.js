@@ -28,7 +28,7 @@ routes.post('/articles/:articleId/tags', TagController.store);
 
 routes.get('/tags', TagController.index);
 
-routes.post('/author/:authorId/comments', CommentController.store);
+routes.post('/articles/:slug/comments', CommentController.store);
 
 routes.get('/comments', CommentController.index);
 
